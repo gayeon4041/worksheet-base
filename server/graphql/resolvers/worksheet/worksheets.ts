@@ -89,7 +89,9 @@ export const worksheetsResolver = {
       ////For inventory check worksheet filter
       const inventoryCheckParam = params.filters.find(param => param.name === 'inventoryCheckNo')
       const executionDateParam = params.filters.find(param => param.name === 'executionDate')
-      if (inventoryCheckParam || executionDateParam) {
+      const orderStatusParam = params.filters.find(param => param.name === 'orderStatus')
+
+      if (inventoryCheckParam || executionDateParam || orderStatusParam) {
         let arrFilters = []
         if (inventoryCheckParam) {
           params.filters.splice(
@@ -103,7 +105,14 @@ export const worksheetsResolver = {
             params.filters.findIndex(item => item.name == 'executionDate'),
             1
           )
-          arrFilters.push({ ...releaseGoodRefNoParam, name: 'refNo' })
+          arrFilters.push({ ...executionDateParam, name: 'executionDate' })
+        }
+        if (orderStatusParam) {
+          params.filters.splice(
+            params.filters.findIndex(item => item.name == 'orderStatus'),
+            1
+          )
+          arrFilters.push({ ...orderStatusParam, name: 'status' })
         }
         const foundInventoryCheck: InventoryCheck[] = await getRepository(InventoryCheck).find({
           ...convertListParams({ filters: arrFilters })
